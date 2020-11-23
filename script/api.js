@@ -1,5 +1,5 @@
 /*
- * APICloud JavaScript Library
+ * APP3C JavaScript Library
  * Copyright (c) 2014 apicloud.com
  */
 (function(window){
@@ -175,7 +175,7 @@
         var isSame = function(doms, el){
             var i = 0, len = doms.length;
             for(i; i<len; i++){
-                if(doms[i].isSameNode(el)){
+                if(doms[i].isEqualNode(el)){
                     return doms[i];
                 }
             }
@@ -289,9 +289,9 @@
             el.classList.toggle(cls);
         }else{
             if(u.hasCls(el, cls)){
-                u.removeCls(el, cls);
-            }else{
                 u.addCls(el, cls);
+            }else{
+                u.removeCls(el, cls);
             }
         }
         return el;
@@ -394,9 +394,14 @@
             console.warn('$api.offset Function need el param, el param must be DOM Element');
             return;
         }
-        var sl = Math.max(document.documentElement.scrollLeft, document.body.scrollLeft);
-        var st = Math.max(document.documentElement.scrollTop, document.body.scrollTop);
-
+        var sl, st;
+        if(document.documentElement){
+            sl = document.documentElement.scrollLeft;
+            st = document.documentElement.scrollTop;
+        }else{
+            sl = document.body.scrollLeft;
+            st = document.body.scrollTop;
+        }
         var rect = el.getBoundingClientRect();
         return {
             l: rect.left + sl,
@@ -474,24 +479,24 @@
             ls.clear();
         }
     };
+
+   
+    /*by king*/
     u.fixIos7Bar = function(el){
-        return u.fixStatusBar(el);
-    };
-    u.fixStatusBar = function(el){
         if(!u.isElement(el)){
-            console.warn('$api.fixStatusBar Function need el param, el param must be DOM Element');
-            return 0;
+            console.warn('$api.fixIos7Bar Function need el param, el param must be DOM Element');
+            return;
         }
-        el.style.paddingTop = api.safeArea.top + 'px';
-        return el.offsetHeight;
-    };
-    u.fixTabBar = function(el){
-        if(!u.isElement(el)){
-            console.warn('$api.fixTabBar Function need el param, el param must be DOM Element');
-            return 0;
+        var strDM = api.systemType;
+        if (strDM == 'ios') {
+            var strSV = api.systemVersion;
+            var numSV = parseInt(strSV,10);
+            var fullScreen = api.fullScreen;
+            var iOS7StatusBarAppearance = api.iOS7StatusBarAppearance;
+            if (numSV >= 7 && !fullScreen && iOS7StatusBarAppearance) {
+                el.style.paddingTop = '20px';
+            }
         }
-        el.style.paddingBottom = api.safeArea.bottom + 'px';
-        return el.offsetHeight;
     };
     u.toast = function(title, text, time){
         var opts = {};
